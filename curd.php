@@ -13,15 +13,15 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.js">
     </script>
-
+<link rel="stylesheet" href="sty.css" >
     <title>easyNote!</title>
     </script>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">   
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">easyNote</a>
+            <a class="navbar-brand" href="curd.php">easyNote</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -32,32 +32,51 @@
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Features</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link active" href="#">About</a>
                     </li>
+                    
                 </ul>
+               
             </div>
+         <p >  <?php  session_start();
+        $user=$_SESSION["username"];
+                            
+                          echo "<h6 class='sesstion' > <strong><u>Welcome:". $_SESSION["username"]."</u></strong> </h6>";
+           ?>  </p>    <ul class="navbar-nav"> 
+    <li class="nav-item">
+                        <a class="nav-link active" href="logout.php">Logout</a>
+                    </li>
+</ul>
         </div>
+      
+    
     </nav>
 
+    
     <?php
+    
+ if (isset($_SESSION["username"])){
+    if(time()-$_SESSION["login_time_stamp"] >300)   
+    {  $_SESSION["username"] = $user;
+        session_unset(); 
+        session_destroy(); 
+        header("Location:login.php"); 
+    } 
+   
+ }
+else{
+    header("Location:login.php"); 
+}
 
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
+if($_SERVER['REQUEST_METHOD'] == 'POST'){ 
 if(isset($_POST['snoEdit'])){
 //update the records
 $sno=$_POST['snoEdit'];
 $title=$_POST['titleEdit'];
 $note=$_POST['noteEdit'];
 
-$server="localhost";
-$database="notes";
-$username="root";
-$password="";
-$conn=mysqli_connect($server,$username,$password,$database);
-
-$sql ="UPDATE `$database` SET `Title` = '$title' ,  `note` = '$note' , `time` = CURRENT_TIMESTAMP WHERE `notes`.`Sno` = '$sno'";  
+require 'db_config.php';
+$sql ="UPDATE `$user` SET `Title` = '$title' ,  `note` = '$note' , `time` = CURRENT_TIMESTAMP WHERE `$user`.`Sno` = '$sno'";  
 $RESULT= mysqli_query($conn, $sql);
 
 if($RESULT){   
@@ -81,13 +100,9 @@ elseif(isset($_POST['delNotes'])){
     $title=$_POST['delTitle'];
     $note=$_POST['delnote'];
     
-    $server="localhost";
-    $database="notes";
-    $username="root";
-    $password="";
-    $conn=mysqli_connect($server,$username,$password,$database);
+    require 'db_config.php';
     
-    $sql = "DELETE FROM `notes` WHERE `notes`.`Sno` = '$sno';";
+    $sql = "DELETE FROM `$user` WHERE `$user`.`Sno` = '$sno';";
     $RESULT= mysqli_query($conn, $sql);
     
     if($RESULT){   
@@ -105,19 +120,136 @@ elseif(isset($_POST['delNotes'])){
       </div>";
       }
     }
+    elseif(isset($_POST['upload']))
+    {
+       
+    $target_dir = 'uploads/'.$_SESSION['username'];
+    if(!is_dir($target_dir)){   
+        //Directory does not exist, so lets create it.
+        mkdir($target_dir, 0755);
+    }
     
-else{
-$server="localhost";
-$database="notes";
-$username="root";
-$password="";
+ $target_file = $target_dir.'/' .($_FILES["fileToUpload"]["name"]);
+    $uploadOk = 1;
+    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+    $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+    
+    
+    // Check if image file is a actual image or fake image
+    if(isset($_POST["submit"])) {
+      if($check !== false) {
+        echo "File is an image - " . $check["mime"] . ".";
+ 
+        $uploadOk = 1;
+    }}
+    
+    //   } else {
+    //     echo"
+    //   <div class='alert alert-danger alert-dismissible fade show' role='alert'>
+    //   <center><strong>File is not an image. ! </strong> </center>
+    //   <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+    //   </div>";
+
+
+    //   //  echo "File is not an image.";
+    //     $uploadOk = 0; 
+    //   } 
+
+        if (file_exists($target_file)) {
+
+            echo"<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+      <center><strong>Sorry, file already exists. ! </strong> </center>
+      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+      </div>";
+
+       //  echo "Sorry, file already exists.";
+          $uploadOk = 0;
+        
+        
+        }
+
+        // Check file size
+         
+        elseif ( $_FILES["fileToUpload"]["size"] > 500000) {
+            echo"<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+            <center><strong>Sorry, your file is too large. ! </strong> </center>
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>";
+      
+         
+           //echo "Sorry, your file is too large.";
+          $uploadOk = 0;
+        
+        
+        }
+        
+        // Allow certain file formats
+        elseif($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+        && $imageFileType != "gif" && $videoFileType = "mp4") {
+            echo"<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+            <center><strong>Sorry, only JPG, JPEG, PNG & GIF files are allowed.! </strong> </center>
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>";
+         
+        
+
+        // echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+          $uploadOk = 0;
+        
+        
+        }
+        if (empty($_FILES["fileToUpload"])) {
+            
+       
+            echo"<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+            <center><strong>Sorry, only JPG, JPEG, PNG & GIF files are alloweded.! </strong> </center>
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>"; 
+            $uploadOk = 0;
+        }
+
+        // Check if $uploadOk is set to 0 by an error
+        elseif ($uploadOk == 0 ) {
+            echo"<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+            <center><strong>Sorry, your file was not uploaded.! </strong> </center>
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>";
+        // echo "Sorry, your file was not uploaded.";
+
+        
+        // if everything is ok, try to upload file
+        } else {
+          if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+            echo "<div class='alert alert-success alert-dismissible fade show' role='alert'>
+        <center><strong>Success!</strong> The file -". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"]))." has been uploaded.</center>
+        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+        </div>";
+
+           
+           //echo "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.";
+        
+        
+          } else {
+            echo"<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+            <center><strong>Sorry, there was an error uploading your file.! </strong> </center>
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>";
+           
+         //  echo "Sorry, there was an error uploading your file.";
+        
+        
+          }
+        }
+    } 
+   elseif (isset($_POST['add'])){
+
 $title=$_POST['title'];
 $note=$_POST['note'];
 
 
-$conn=mysqli_connect($server,$username,$password,$database);
+require 'db_config.php';
 
-$sql ="INSERT INTO `notes` (`Sno`, `Title`, `note`, `time`) VALUES (NULL, '$title', '$note', CURRENT_TIMESTAMP);";
+$sql ="INSERT INTO `$user` (`Sno`, `Title`, `note`, `time`) VALUES (NULL, '$title', '$note', CURRENT_TIMESTAMP);";
   
 
 $RESULT= mysqli_query($conn, $sql);
@@ -137,8 +269,7 @@ else{
   }
 
 
-}
-}
+}}
 
 ?>
 
@@ -153,30 +284,33 @@ else{
         <div class="mb-3">
             <form action="curd.php" method="POST">
                 <label for="exampleFormControlInput1" class="form-label">Add Title</label>
-                <input type="text" class="form-control" id="title" name="title"><br>
+                <input type="text" class="form-control" id="title" name="title" required><br>
                 <label for="exampleFormControlTextarea1" class="form-label"> Take Note</label>
-                <textarea class="form-control" id="note" name="note" rows="3"></textarea><br>
-
-                <input type="submit" class="btn btn-primary" value="Submit"></button>
+                <textarea class="form-control" id="note" name="note" rows="3" required></textarea><br>
+               
+                <input type="submit" class="btn btn-primary" value="Submit" name="add" ></button>
             </form>
+            <form action="curd.php" method="post" enctype="multipart/form-data" class="mb-3 mt-4">
+ <strong>Select image to upload:
+</strong> 
+  <input type="file" class="btn btn-primary" name="fileToUpload" id="fileToUpload" required>
+  <input type="submit" class="btn btn-primary"value="Upload Image" name="upload">
+  </form>
         </div>
     </div>
+    <hr>
     <?php
-$server="localhost";
-$database="notes";
-$username="root";
-$password="";
- $conn=mysqli_connect($server,$username,$password,$database);
-$dis = "SELECT * FROM `$database`";
+require 'db_config.php';
+$dis = "SELECT * FROM $user";
 $disply = mysqli_query($conn, $dis);
 if (mysqli_num_rows($disply) > 0) {
   $sno=0;
   ?>
-    <table id="table" class="display">
+    <table id="table" class="table-primary">
         <thead>
-            <tr>
+            <tr class="table-primary">
                 <th>Sno</th>
-                <th>Title</th>
+                <th>Title</th>  
                 <th>Notes</th>
                 <th>Time</th>
                 <th>Action</th>
@@ -188,18 +322,18 @@ if (mysqli_num_rows($disply) > 0) {
       $sno+1;
       $sno++;?>
             <tr>
-                <td> <?php echo $sno ?> </td></strong>
-                <td><?php echo $row['Title'];?> </td>
-                <td><?php echo $row['note'];?> </td>
-                <td><?php echo $row['time'];?> </td>
-                <td> <button type="button" id='  <?php echo $row['Sno'];?> ' class=" edit btn btn-primary" data-bs-toggle="modal"
+                <td class="table-primary"> <?php echo $sno ?> </td></strong>
+                <td class="table-primary"><?php echo $row['Title'];?> </td>
+                <td class="table-primary"><?php echo $row['note'];?> </td>
+                <td class="table-primary" ><?php echo $row['time'];?> </td>
+                <td class="table-primary"> <button type="button" id='  <?php echo $row['Sno'];?> ' class=" edit btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Edit</button>
                     <button type="button" class=" delete btn btn-primary"  id=' <?php echo $row['Sno'];?> ' data-bs-toggle="modal" data-bs-target="#exampleModal2"
                         data-bs-whatever="@getbootstrap">Delete</button>
                 </td>
             </tr>
-            <?php }?>
-            <?php }?>
+            <?php }}?>
+                
         </tbody>
     </table>
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -243,11 +377,11 @@ if (mysqli_num_rows($disply) > 0) {
                 <input type="hidden" name="delNotes" id="delNotes">
                         <div class="mb-3">
                             <label for="recipient-name" class="col-form-label">Title:</label>
-                            <input type="text" class="form-control" id="delTitle"name="delTitle">
+                            <input type="text" class="form-control" id="delTitle"name="delTitle" required="true" readonly="true">
                         </div>
                         <div class="mb-3">
                             <label for="message-text" class="col-form-label">Note:</label>
-                            <textarea class="form-control" id="delnote" name="delnote"></textarea>
+                            <textarea class="form-control" id="delnote" name="delnote" required="true" readonly="true"></textarea>
                         </div>
                     
                 </div>
@@ -279,7 +413,7 @@ if (mysqli_num_rows($disply) > 0) {
             Note= tr.getElementsByTagName("td")[2].innerText;
             console.log(title,Note);
             titleEdit.value=title;
-            noteEdit.value=title;
+            noteEdit.value=Note;
             snoEdit.value=e.target.id;
             console.log(e.target.id);
            
@@ -317,23 +451,9 @@ if (mysqli_num_rows($disply) > 0) {
     <!--
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
-    -->
-
-    <script>
-    $(document).ready(function() {
-
-    $(".btn").click(function() {
-        $("#myModal").modal('show');
-    });
+    --> </script>
 
 
-
-
-
-
-
-    })
-    </script>
 </body>
 
 </html>

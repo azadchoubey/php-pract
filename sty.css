@@ -14,7 +14,7 @@ body{
     border: 2px solid green;
  
     text-align: center;
-
+    text-shadow:0 1px;  
     background-origin: padding-box;
 }   
 
@@ -22,7 +22,7 @@ body{
     color: black;  
     margin-right: 40%;
     background-color: rgb(230, 240, 230);
-   
+
 }
 .from{
 padding:4px;
@@ -34,5 +34,15 @@ margin-bottom: 5px;
 .heading{
 
   padding: 10%;
-
+  text-shadow:0 1px;
 }
+footer {
+  text-align: center;
+  padding: 2px;
+  background-color: black;
+  color:white;
+  width:100%;
+   max-width: 100%; 
+   text-shadow:0 1px;
+
+} 

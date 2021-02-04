@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <head>
@@ -13,13 +12,13 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.js">
     </script>
-<link rel="stylesheet" href="sty.css" >
+    <link rel="stylesheet" href="sty.css">
     <title>easyNote!</title>
     </script>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">   
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="curd.php">easyNote</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -34,25 +33,26 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="#">About</a>
                     </li>
-                    
+
                 </ul>
-               
+
             </div>
-         <p >  <?php  session_start();
+            <p> <?php  session_start();
         $user=$_SESSION["username"];
                             
                           echo "<h6 class='sesstion' > <strong><u>Welcome:". $_SESSION["username"]."</u></strong> </h6>";
-           ?>  </p>    <ul class="navbar-nav"> 
-    <li class="nav-item">
-                        <a class="nav-link active" href="logout.php">Logout</a>
-                    </li>
-</ul>
+           ?> </p>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="logout.php">Logout</a>
+                </li>
+            </ul>
         </div>
-      
-    
+
+
     </nav>
 
-    
+
     <?php
     
  if (isset($_SESSION["username"])){
@@ -126,7 +126,7 @@ elseif(isset($_POST['delNotes'])){
     $target_dir = 'uploads/'.$_SESSION['username'];
     if(!is_dir($target_dir)){   
         //Directory does not exist, so lets create it.
-        mkdir($target_dir, 0755);
+        mkdir($target_dir, 777);
     }
     
  $target_file = $target_dir.'/' .($_FILES["fileToUpload"]["name"]);
@@ -287,17 +287,42 @@ else{
                 <input type="text" class="form-control" id="title" name="title" required><br>
                 <label for="exampleFormControlTextarea1" class="form-label"> Take Note</label>
                 <textarea class="form-control" id="note" name="note" rows="3" required></textarea><br>
-               
-                <input type="submit" class="btn btn-primary" value="Submit" name="add" ></button>
+
+                <input type="submit" class="btn btn-primary" value="Submit" name="add"></button>
             </form>
             <form action="curd.php" method="post" enctype="multipart/form-data" class="mb-3 mt-4">
- <strong>Select image to upload:
-</strong> 
-  <input type="file" class="btn btn-primary" name="fileToUpload" id="fileToUpload" required>
-  <input type="submit" class="btn btn-primary"value="Upload Image" name="upload">
-  </form>
+                <strong>Select image to upload:
+                </strong>
+                <input type="file" class="btn btn-primary" name="fileToUpload" id="fileToUpload" required>
+                <input type="submit" class="btn btn-primary" value="Upload Image" name="upload">
+            </form>
         </div>
     </div>
+    <?php
+//     global $target_file;
+// $target_file; //Let say If I put the file name Bang.png
+// echo "<a href='download.php?nama=".$target_file."'>download</a> ";
+
+// Array containing sample image file names
+$path='uploads/'.$_SESSION['username'];
+$dir_handle = opendir($path) or die("Unable to open $path");
+      while ($file = readdir($dir_handle)) {
+        if ($file == '.' || $file == '..') {
+          continue;
+        } 
+  // Process download
+  $name =$path.'/'.$file ;
+$images = array($name);
+
+// Loop through array to create image gallery
+foreach($images as $image){
+    echo '<div class="img-box">';
+        echo '<img src="'.$image.'" width="200" alt="' .pathinfo($image, PATHINFO_FILENAME).'">';
+        echo '<p><a href="download.php?file=' .urlencode($image).'">Download</a></p>';
+    echo '</div>';
+} }
+?>
+
     <hr>
     <?php
 require 'db_config.php';
@@ -310,7 +335,7 @@ if (mysqli_num_rows($disply) > 0) {
         <thead>
             <tr class="table-primary">
                 <th>Sno</th>
-                <th>Title</th>  
+                <th>Title</th>
                 <th>Notes</th>
                 <th>Time</th>
                 <th>Action</th>
@@ -325,15 +350,17 @@ if (mysqli_num_rows($disply) > 0) {
                 <td class="table-primary"> <?php echo $sno ?> </td></strong>
                 <td class="table-primary"><?php echo $row['Title'];?> </td>
                 <td class="table-primary"><?php echo $row['note'];?> </td>
-                <td class="table-primary" ><?php echo $row['time'];?> </td>
-                <td class="table-primary"> <button type="button" id='  <?php echo $row['Sno'];?> ' class=" edit btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Edit</button>
-                    <button type="button" class=" delete btn btn-primary"  id=' <?php echo $row['Sno'];?> ' data-bs-toggle="modal" data-bs-target="#exampleModal2"
+                <td class="table-primary"><?php echo $row['time'];?> </td>
+                <td class="table-primary"> <button type="button" id='  <?php echo $row['Sno'];?> '
+                        class=" edit btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        data-bs-whatever="@getbootstrap">Edit</button>
+                    <button type="button" class=" delete btn btn-primary" id=' <?php echo $row['Sno'];?> '
+                        data-bs-toggle="modal" data-bs-target="#exampleModal2"
                         data-bs-whatever="@getbootstrap">Delete</button>
                 </td>
             </tr>
             <?php }}?>
-                
+
         </tbody>
     </table>
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -344,17 +371,17 @@ if (mysqli_num_rows($disply) > 0) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                <form action="curd.php" method="POST">
-                <input type="hidden" name="snoEdit" id="snoEdit">
+                    <form action="curd.php" method="POST">
+                        <input type="hidden" name="snoEdit" id="snoEdit">
                         <div class="mb-3">
                             <label for="recipient-name" class="col-form-label">Title:</label>
                             <input type="text" class="form-control" id="titleEdit" name="titleEdit">
                         </div>
                         <div class="mb-3">
                             <label for="message-text" class="col-form-label">Note:</label>
-                            <textarea class="form-control" id="noteEdit" name= "noteEdit"></textarea>
+                            <textarea class="form-control" id="noteEdit" name="noteEdit"></textarea>
                         </div>
-                
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
@@ -364,7 +391,7 @@ if (mysqli_num_rows($disply) > 0) {
             </div>
         </div>
     </div>
-  
+
     <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -373,17 +400,19 @@ if (mysqli_num_rows($disply) > 0) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                <form action="curd.php" method="POST">
-                <input type="hidden" name="delNotes" id="delNotes">
+                    <form action="curd.php" method="POST">
+                        <input type="hidden" name="delNotes" id="delNotes">
                         <div class="mb-3">
                             <label for="recipient-name" class="col-form-label">Title:</label>
-                            <input type="text" class="form-control" id="delTitle"name="delTitle" required="true" readonly="true">
+                            <input type="text" class="form-control" id="delTitle" name="delTitle" required="true"
+                                readonly="true">
                         </div>
                         <div class="mb-3">
                             <label for="message-text" class="col-form-label">Note:</label>
-                            <textarea class="form-control" id="delnote" name="delnote" required="true" readonly="true"></textarea>
+                            <textarea class="form-control" id="delnote" name="delnote" required="true"
+                                readonly="true"></textarea>
                         </div>
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
@@ -405,40 +434,39 @@ if (mysqli_num_rows($disply) > 0) {
 
     <script>
     edits = document.getElementsByClassName('edit');
-    Array.from(edits).forEach((element)=>{
-        element.addEventListener("click",(e)=>{
-            console.log("edit",);
-            tr= e.target.parentNode.parentNode;
-            title= tr.getElementsByTagName("td")[1].innerText;
-            Note= tr.getElementsByTagName("td")[2].innerText;
-            console.log(title,Note);
-            titleEdit.value=title;
-            noteEdit.value=Note;
-            snoEdit.value=e.target.id;
+    Array.from(edits).forEach((element) => {
+        element.addEventListener("click", (e) => {
+            console.log("edit", );
+            tr = e.target.parentNode.parentNode;
+            title = tr.getElementsByTagName("td")[1].innerText;
+            Note = tr.getElementsByTagName("td")[2].innerText;
+            console.log(title, Note);
+            titleEdit.value = title;
+            noteEdit.value = Note;
+            snoEdit.value = e.target.id;
             console.log(e.target.id);
-           
+
         })
 
 
     })
 
-   Delete = document.getElementsByClassName('delete');
-    Array.from(Delete).forEach((element)=>{
-        element.addEventListener("click",(e)=>{
-            console.log("Delete",);
-            tr= e.target.parentNode.parentNode;
-            title= tr.getElementsByTagName("td")[1].innerText;
-            Note= tr.getElementsByTagName("td")[2].innerText;
-            console.log(title,Note);
-            delTitle.value=title;
-            delnote.value=Note;
-            delNotes.value=e.target.id;
+    Delete = document.getElementsByClassName('delete');
+    Array.from(Delete).forEach((element) => {
+        element.addEventListener("click", (e) => {
+            console.log("Delete", );
+            tr = e.target.parentNode.parentNode;
+            title = tr.getElementsByTagName("td")[1].innerText;
+            Note = tr.getElementsByTagName("td")[2].innerText;
+            console.log(title, Note);
+            delTitle.value = title;
+            delnote.value = Note;
+            delNotes.value = e.target.id;
             console.log(e.target.id);
         })
 
 
-})
-
+    })
     </script>
 
 
@@ -451,9 +479,10 @@ if (mysqli_num_rows($disply) > 0) {
     <!--
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
-    --> </script>
+    -->
+    </script>
 
-<?php include 'flooter.php'; ?>
+    <?php include 'flooter.php'; ?>
 </body>
 
 </html>

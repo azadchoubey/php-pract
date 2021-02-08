@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+$show=false;
  if (isset($_SESSION["username"])){
   header("Location:curd.php");
 }
@@ -35,6 +36,7 @@ if ($r1 !=  0){
             $result=mysqli_query($conn,$update);
             $create ="CREATE TABLE `notes`.`$user` ( `Sno` INT(50) NOT NULL AUTO_INCREMENT , `Title` VARCHAR(50) NOT NULL , `note` VARCHAR(200) NOT NULL , `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`Sno`)) ENGINE = MyISAM;";
             $sql=mysqli_query($conn,$create);
+            $show=true;
             }
             echo"
             <div class='alert alert-success alert-dismissible fade show' role='alert'>
@@ -77,11 +79,39 @@ if ($r1 !=  0){
     <title>Sign Up!</title>
   </head>
   <body>
+  <h3 class="container mt-3">
+            <center>Create a New Account</center>
+      </h3>
+    <hr>
+  <div class="contanior " >
+  
   <?php
+$child_page = 'login.php';
+if(!$show)
+{
+echo'
+<form action="signup.php" method="post" enctype="application/x-www-form-urlencoded">
+    <tr><br>
+    <th>Username</th>
+    </tr><br>
+<tr>
+<td><input type="text" name="username" placeholder="Username" class="from"  required></td></tr><br>
+<tr> <th> Password</th><br>
+</tr>
+<tr><td><input type="password"name="password" placeholder="Password" class="from" required></td></tr><br>
+<tr> <th> Confirm Password</th><br>
+</tr>
+<tr><td><input type="password"name="cpassword" placeholder="Confirm Password" class="from" required></td></tr><br>
+<tr> <td> <input type="submit" class="btn btn-primary mt-3" id="submit" value="Sign Up"></button></td><pre></tr></pre>
+
+</form>';   }
+echo'
+<tr> <td> <input type="button" class="btn btn-primary mt-3" onclick="location.href=\'' . $child_page . '\'"  value="Login Your Account"></button></td><pre></tr>
+</div>';
 
 
 ?>
-  <div class="contanior " >
+  <!-- <div class="contanior " >
   <form action="signup.php" method="post" enctype="application/x-www-form-urlencoded">
          <tr>
        <br> <th class="heading" >Username</th>
@@ -98,7 +128,7 @@ if ($r1 !=  0){
 <tr> <td> <input type="submit" class="btn btn-primary mt-3" id="submit" value="Sign Up"></button></td></tr><br>
  <pre> <br><tr> <td> <a href='login.php' id="login" >Login your Account Here</a></pre></td></tr>
 </form></div>
-
+ -->
 
 
 

@@ -129,7 +129,7 @@ elseif(isset($_POST['delNotes'])){
         mkdir($target_dir, 777);
     }
     
- $target_file = $target_dir.'/' .($_FILES["fileToUpload"]["name"]);
+ $target_file = $target_dir.'/'.$_SESSION['username'] .'/'.($_FILES["fileToUpload"]["name"]);
     $uploadOk = 1;
     $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
     $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
@@ -304,7 +304,9 @@ else{
 // echo "<a href='download.php?nama=".$target_file."'>download</a> ";
 
 // Array containing sample image file names
+
 $path='uploads/'.$_SESSION['username'];
+if(file_exists($path)){
 $dir_handle = opendir($path) or die("Unable to open $path");
       while ($file = readdir($dir_handle)) {
         if ($file == '.' || $file == '..') {
@@ -320,7 +322,12 @@ foreach($images as $image){
         echo '<img src="'.$image.'" width="200" alt="' .pathinfo($image, PATHINFO_FILENAME).'">';
         echo '<p><a href="download.php?file=' .urlencode($image).'">Download</a></p>';
     echo '</div>';
-} }
+} 
+     
+} echo '<p><a href="download.php?allzip='.$path.'">Download</a></p>';
+
+
+}
 ?>
 
     <hr>

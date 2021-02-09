@@ -2,17 +2,11 @@
 session_start();
     if(isset($_GET['file'])){
       $files = urldecode($_REQUEST["file"]);
-      // $path='uploads/'.$_SESSION['username'];
-      // // Open the folder
-      //  $dir_handle = opendir($path) or die("Unable to open $path");
-      //  while ($file = readdir($dir_handle)) {
-      //    if ($file == '.' || $file == '..') {
-      //      continue;
+ 
    
    // Process download
   
- // var_dump($images);
-   if(file_exists($files)) {
+  if(file_exists($files)) {
      header('Content-Description: File Transfer');
      header('Content-Type: application/octet-stream');
      header('Content-Disposition: attachment; filename="'.basename($files).'"');
@@ -30,6 +24,7 @@ session_start();
       
 if(isset($_GET['allzip'])){
   $path=($_REQUEST["allzip"]);
+  $zipfolder = 'uploads/' . $_SESSION['username'];
 $dir_handle = opendir($path) or die("Unable to open $path");
     while ($file = readdir($dir_handle)) {
       if ($file == '.' || $file == '..') {
@@ -38,7 +33,7 @@ $dir_handle = opendir($path) or die("Unable to open $path");
 
  $zip = new ZipArchive;
  //Set Zip file name
- $zip_name =  $path.'/'.$_SESSION['username'].'.zip';
+ $zip_name = $zipfolder.'/'.'download'.'.zip';
  $zip->open($zip_name, ZIPARCHIVE::CREATE);
 
  $zip->addFile($name);
@@ -54,8 +49,5 @@ $dir_handle = opendir($path) or die("Unable to open $path");
  readfile($zip_name);
   }
 
-
-    // }}}
- 
  ?>
 

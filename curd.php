@@ -114,13 +114,13 @@
             }
         } elseif (isset($_POST['upload'])) {
 
-            $target_dir = 'uploads/' . $_SESSION['username'].'/pics';
+            $target_dir = 'uploads/' . $_SESSION['username'] . '/pics';
             if (!is_dir($target_dir)) {
                 //Directory does not exist, so lets create it.
-                mkdir($target_dir,0777, true);
+                mkdir($target_dir, 0777, true);
             }
 
-            $target_file = $target_dir. '/' . ($_FILES["fileToUpload"]["name"]);
+            $target_file = $target_dir . '/' . ($_FILES["fileToUpload"]["name"]);
             $uploadOk = 1;
             $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
             $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
@@ -290,38 +290,81 @@
 
     // Array containing sample image file names
 
-    $path = 'uploads/' . $_SESSION['username'];
-    if(file_exists($path)) {
-    $dir_handle = opendir($path) or die("Unable to open $path");
-    while ($file = readdir($dir_handle)) {
-        if ($file == '.' || $file == '..') {
-            continue;
-        }
-        // Process download
-        $name = $path . '/' . $file;
-        $images = array($name);
-                // var_dump($images);
-        // Loop through array to create image gallery
-       
-        foreach ($images as $image) {
-            echo '<div class="img-box">';
-            echo '<img src="' . $image . '" width="200" alt="' . pathinfo($image, PATHINFO_FILENAME) . '">';
-            echo '<p><a href="download.php?file=' . urlencode($image) . '">Download</a></p>';
-            echo '</div>';
-        }
-     }
+    //     $path = 'uploads/' . $_SESSION['username'].'/pics';
+    //     if(file_exists($path)) {
+    //     $dir_handle = opendir($path) or die("Unable to open $path");
+    //     while ($file = readdir($dir_handle)) {
+    //         if ($file == '.' || $file == '..') {
+    //             continue;
+    //         }
+    //         // Process download
+    //         $name = $path . '/' . $file;
+    //         $images = array($name);
+    //                 // var_dump($images);
+    //         // Loop through array to create image gallery
 
-     echo '<p><a href="download.php?allzip=' .$path. '">Download zip</a></p>';
+    //         foreach ($images as $image) {
+    //             echo '<div class="img-box">';
+    //             echo '<img src="' . $image . '" width="200" alt="' . pathinfo($image, PATHINFO_FILENAME) . '">';
+    //             echo '<p><a href="download.php?file=' . urlencode($image) . '">Download</a></p>';
+    //             echo '</div>';
+    //         }
+    //      }
 
-}else{
-    echo "no file to show";
-}
+    //      echo '<p><a href="download.php?allzip='.$path.'">Download zip</a></p>';
 
-
-   
-
-
+    // }else{
+    //     echo "no file to show";
+    // }
     ?>
+    <div class="modal fade" id="exampleModal23" tabindex="-1" aria-labelledby="exampleModalLabe3" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+    <div class="container-fluid">
+    <div class="modal-content">
+    <div class="modal-header">  
+        <h5 class="modal-title" id="exampleModalLabel">All Pics</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">  
+    
+      <div class="row">
+     
+          
+       <?php $path = 'uploads/' . $_SESSION['username'] . '/pics';
+                    if (file_exists($path)) {
+                        $dir_handle = opendir($path) or die("Unable to open $path");
+                        while ($file = readdir($dir_handle)) {
+                            if ($file == '.' || $file == '..') {
+                                continue;
+                            }
+                            // Process download
+                            $name = $path . '/' . $file;
+                            $images = array($name);
+                            // var_dump($images);
+                            // Loop through array to create image gallery
+
+                            foreach ($images as $image) {
+                                  echo '<div class="column">';
+                                echo '<img src="' . $image . '" width="200" alt="' . pathinfo($image, PATHINFO_FILENAME) . '<br>">';
+                                echo '<p><a href="download.php?file=' . urlencode($image) . '">Download</a></p>';
+                                echo '</div>';
+                            }
+                        }
+
+                        echo '<p><a href="download.php?allzip=' . $path . '">Download zip</a></p>';
+                    } else {
+                        echo "no file to show";
+                    } ?>
+      </div></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
     <hr>
     <?php
@@ -354,6 +397,7 @@
                         <td class="table-primary"> <button type="button" id='  <?php echo $row['Sno']; ?> ' class=" edit btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Edit</button>
                             <button type="button" class=" delete btn btn-primary" id=' <?php echo $row['Sno']; ?> ' data-bs-toggle="modal" data-bs-target="#exampleModal2" data-bs-whatever="@getbootstrap">Delete</button>
                         </td>
+                        <td> <button type="button" class="show btn btn-primary" id='exampleModal23' data-bs-toggle="modal" data-bs-target="#exampleModal23" data-bs-whatever="@getbootstrap">Show pics</button></td>
                     </tr>
             <?php }
             } ?>
@@ -462,7 +506,9 @@
 
 
             })
-        </script>
+
+            </script>
+           
 
 
         <!-- Option 1: Bootstrap Bundle with Popper -->
@@ -470,10 +516,10 @@
         </script>
 
         <!-- Option 2: Separate Popper and Bootstrap JS -->
-        <!--
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
-    -->
+
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script> -->
+
         </script>
 
         <?php include 'flooter.php'; ?>

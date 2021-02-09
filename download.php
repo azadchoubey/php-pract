@@ -2,13 +2,13 @@
 session_start();
     if(isset($_GET['file'])){
       $files = urldecode($_REQUEST["file"]);
-      $path='uploads/'.$_SESSION['username'];
-      // Open the folder
-       $dir_handle = opendir($path) or die("Unable to open $path");
-       while ($file = readdir($dir_handle)) {
-         if ($file == '.' || $file == '..') {
-           continue;
-         } 
+      // $path='uploads/'.$_SESSION['username'];
+      // // Open the folder
+      //  $dir_handle = opendir($path) or die("Unable to open $path");
+      //  while ($file = readdir($dir_handle)) {
+      //    if ($file == '.' || $file == '..') {
+      //      continue;
+   
    // Process download
   
  // var_dump($images);
@@ -25,41 +25,37 @@ session_start();
  } else {  
      http_response_code(404);  
    die();     closedir($dir_handle);
- } }
- 
-      }
+ }       } 
+
       
 if(isset($_GET['allzip'])){
-  $path=$_GET['allzip'];
-  $sec='uploads/'.$_SESSION['username'];
-    $dir_handle = opendir($path) or die("Unable to open $path");
+  $path=($_REQUEST["allzip"]);
+$dir_handle = opendir($path) or die("Unable to open $path");
     while ($file = readdir($dir_handle)) {
       if ($file == '.' || $file == '..') {
+    continue;
+ }$name = $path .'/'. $file;
 
-    }  $name = $sec . '/'. $file;
-    $images = array($name);
- 
-    $zip = new ZipArchive;
-      $zipname =$sec.'/'.$_SESSION['username'].".zip";
-     
- $zip->open($zipname, ZipArchive::CREATE);
+ $zip = new ZipArchive;
+ //Set Zip file name
+ $zip_name =  $path.'/'.$_SESSION['username'].'.zip';
+ $zip->open($zip_name, ZIPARCHIVE::CREATE);
 
-
-    $zip->addFile($name);
-    // $zip->addFile($files);
-    header('Content-Description: File Transfer');
-    header("Content-type: application/octet-stream");
-  // header("Content-Disposition: attachment; filename=\"".$zipname."\"");
-  header('Content-Disposition: attachment; filename="'.basename($zipname).'"');
-  header('Expires: 0');
-  header('Cache-Control: must-revalidate');
-  header('Pragma: public');
-  header('Content-Length: ' . filesize($zipname));
-  readfile($zipname);
-   }$zip->close();
-     
+ $zip->addFile($name);
+ $zip->close(); 
+   }header('Content-Description: File Transfer');
+   header("Content-type: application/octet-stream");
+ // header("Content-Disposition: attachment; filename=\"".$zipname."\"");
+ header('Content-Disposition: attachment; filename="'.basename($zip_name).'"');
+ header('Expires: 0');
+ header('Cache-Control: must-revalidate');
+ header('Pragma: public');
+ header('Content-Length: '.filesize($zip_name));
+ readfile($zip_name);
   }
+
+
+    // }}}
  
-
-
+ ?>
 

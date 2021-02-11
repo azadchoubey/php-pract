@@ -19,14 +19,14 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="curd.php">easyNote</a>
+            <a class="navbar-brand" href="curd.php">easyNote!</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" href="curd.php">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" href="#">About</a>
@@ -280,28 +280,32 @@
                 </strong>
                 <input type="file" class="btn btn-primary" name="fileToUpload" id="fileToUpload" required>
                 <input type="submit" class="btn btn-primary" value="Upload Image" name="upload">
-            </form> 
-        </div>
-    </div> 
-  
+            </form>
+        </div> 
+    </div>
     <div class="modal fade" id="exampleModal23" tabindex="-1" aria-labelledby="exampleModalLabe3" aria-hidden="true">
     <div class="modal-dialog modal-lg">
     <div class="container-fluid">
     <div class="modal-content">
     <div class="modal-header">  
-        <h5 class="modal-title" id="exampleModalLabel">All Pics <h5 class="zip"><a href="download.php?allzip=<?php  $path = 'uploads/' . $_SESSION['username'] . '/pics' ; echo $path ?>" class="modal-title">Download zip</a></h5 ></h5>
+    <h5 class="modal-title" id="exampleModalLabel">All Pics <h5 class="zip"><a href="download.php?allzip=<?php  $path = 'uploads/' . $_SESSION['username'] . '/pics' ; echo $path ?>" class="modal-title">Download zip</a></h5 ></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">  
     
       <div class="row">
+     
+          
        <?php $path = 'uploads/' . $_SESSION['username'] . '/pics';
+
                     if (file_exists($path)) {
                         $dir_handle = opendir($path) or die("Unable to open $path");
                         while ($file = readdir($dir_handle)) {
                             if ($file == '.' || $file == '..') {
                                 continue;
+                                return ( count ( $file ) > 0 ) ?  TRUE: FALSE;
                             }
+                          
                             // Process download
                             $name = $path . '/' . $file;
                             $images = array($name);
@@ -310,7 +314,7 @@
 
                             foreach ($images as $image) {
                                   echo '<div class="column">';
-                                echo '<img src="' . $image . '" width="200" alt="' . pathinfo($image, PATHINFO_FILENAME) . '<br>">';
+                                echo '<img src="' . $image . '" width="200px" alt="' . pathinfo($image, PATHINFO_FILENAME) . '<br>">';
                                 echo '<p><a href="download.php?file=' . urlencode($image) . '">Download</a></p>';
                                 echo '</div>';
                             }
@@ -327,10 +331,17 @@
         </div>
     </div>
 </div>
+<div class="container mt-3">
+<?php $q   = (count(glob("$path/*")) === 0) ? 'Empty' : 'Not empty';
+if($q=='Empty')
+{
 
+}else{
+   echo '<button type="button" class="text-center btn btn-primary" id="exampleModal23" data-bs-toggle="modal" data-bs-target="#exampleModal23" data-bs-whatever="@getbootstrap">Show pics</button>'; 
+}
+?>
 
-
-
+</div>
     <hr>
     <?php
     require 'db_config.php';
@@ -347,8 +358,7 @@
                     <th>Notes</th>
                     <th>Time</th>
                     <th>Action</th>
-                
-                </tr> 
+                </tr>
             </thead>
             <tbody>
 
@@ -362,22 +372,10 @@
                         <td class="table-primary"><?php echo $row['time']; ?> </td>
                         <td class="table-primary"> <button type="button" id='  <?php echo $row['Sno']; ?> ' class=" edit btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Edit</button>
                             <button type="button" class=" delete btn btn-primary" id=' <?php echo $row['Sno']; ?> ' data-bs-toggle="modal" data-bs-target="#exampleModal2" data-bs-whatever="@getbootstrap">Delete</button>
-                        </td>
-                        
+                        </td>   
                     </tr>
-            <?php }
-            }?> <?php
-           
-            $path = 'uploads/' . $_SESSION['username'] . '/pics';
-            $q   = (count(glob("$path/*")) === 0) ? 'Empty' : 'Not empty';
-                
-            if ($q=="Empty") {
-
-            }
-                
-            else
-                echo '<button type="button" class="  btn btn-primary " id="exampleModal23" data-bs-toggle="modal" data-bs-target="#exampleModal23" data-bs-whatever="@getbootstrap">Show pics</button>';
-            ?>   
+            <?php } ?>
+           <?php } ?>
 
             </tbody>
         </table>
@@ -495,7 +493,7 @@
         <!-- Option 2: Separate Popper and Bootstrap JS -->
 
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script> 
 
         </script>
 

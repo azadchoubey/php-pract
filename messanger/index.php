@@ -1,5 +1,5 @@
 <?php
-            $msg='';
+  $msg='';
  if(isset($_POST['login']))  {
   
      $userid = $_POST['userid'];
@@ -10,33 +10,46 @@
                 $sql->execute();
                $row=$sql->rowCount();
                 if($row>0){
-                    session_start();
-                    $_SESSION['userid']=$userid;
-                    $checktable=$con->prepare("SELECT *  FROM `$userid`");
-                    $checktable->execute();
-                  echo  $table=$checktable->rowCount();
-                    if($table>0){
-                        header("Location:home.php");
-                        exit();
-                    }else{
-                        $insert= $con->prepare("CREATE TABLE `$userid` ( `id` INT NOT NULL , `message` TEXT NOT NULL , `datetime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP )");
-                        $insert->execute();
-                       echo $insertid= $con->lastInsertId();
-                       if($insertid>0){
-                        header("Location:home.php");
-                        exit();
-                       }else{
-                        // echo $e->getMessage();
-                       }
-                    }
+                    $data=$sql->fetchAll(PDO::FETCH_ASSOC);
+                    foreach($data as $row){
+                        session_start();
+                        $_SESSION['id']=$row['id'];
+                        $_SESSION['name']=$row['user_id'];  
+                        print_r( $_SESSION['id']);
+                    }  
                    
+                    $online_status=$con->prepare("UPDATE user_login SET status=1 WHERE id='{$_SESSION['id']}'");
+                    if($online_status->execute()){
+                        $checktable=$con->prepare("SELECT * FROM `$userid`");
+                        $checktable->execute();
+                       if($checktable){
+                           header("Location:home.php");
+                           exit();
+                       }            
+                    }else{
+                        echo "failed to update status";
+                    }
 
-                 
+                      
                 }else{
                     $msg="Invaild Login Details";
                 }
             }catch(PDOException $e){
-                echo $e->getMessage();
+                
+                if($e->errorInfo[1] == 1146){
+                    //when table doesn't exist
+                    $insert= $con->prepare("CREATE TABLE `$userid` ( `id` INT NOT NULL , `message` TEXT NOT NULL , `datetime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP )");
+                    $insert->execute();
+                    $insertid= $con->lastInsertId();
+                   if($insertid>0){
+                    header("Location:home.php");
+                    exit();
+                   }else{
+                    // echo $e->getMessage();
+                   }
+                }else{
+                    echo $e->getMessage();
+                }      
             }   
 
 }else{}

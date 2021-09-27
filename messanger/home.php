@@ -2,7 +2,7 @@
 session_start();
 header("Access-Control-Allow-Headers:*");
 
-    if(isset($_SESSION['userid'])){           
+    if(isset($_SESSION['name']) && $_SESSION['id']){           
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +10,7 @@ header("Access-Control-Allow-Headers:*");
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome <?php echo $_SESSION['userid']?></title>
+    <title>Welcome <?php echo $_SESSION['name']?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>.col-lg-5{
    margin-top: 10%;
@@ -48,8 +48,14 @@ header("Access-Control-Allow-Headers:*");
     header('location:index.php');
 }
 if(isset($_GET['logout'])){
+    $con= new PDO("mysql:host=localhost;dbname=messenger",'root','');
+    $query= $con->query("UPDATE user_login SET status=0 WHERE id='{$_SESSION['id']}'");
+    $query->execute();
+
     unset($_SESSION['userid']);
+    unset($_SESSION['id']);
     header('location:index.php');
+    
     exit();
  }
 ?>

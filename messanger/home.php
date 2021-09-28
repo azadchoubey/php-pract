@@ -29,7 +29,7 @@ header("Access-Control-Allow-Headers:*");
 <div class="container mt-5">
         <div class="row mt-5 ">
             <div class="col-lg-5 mx-auto">
-            <span class="error mx-2"><center><?php  ?><center></span>
+            <p class="error mx-2" id='error'><center><center></p>
                 <form  id ="form" class="mt-5 mx-2">
                     <div class="col"></div>
                     <textarea  class="form-control mt-3" id="exampleFormControlTextarea1" rows="3"></textarea>

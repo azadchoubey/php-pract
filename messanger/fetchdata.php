@@ -1,28 +1,32 @@
 <?php
          
             session_start();
-            $msg='';
-            if(isset($_SESSION['userid'])){     
-
-     $userid = $_POST['userid'];
-     $password = $_POST['password'];
+            if(isset($_SESSION['name']) && isset($_SESSION['id']) && isset($_POST['data'])){    
+              $table=$_SESSION['name'];
             try{
                 $con= new PDO("mysql:host=localhost;dbname=messenger",'root','');
-                $sql= $con->prepare("SELECT * FROM user_login WHERE user_id='$userid'  and Password='$password'");
+                $sql= $con->prepare("SELECT * FROM  $table");
                 $sql->execute();
                $row=$sql->rowCount();
                 if($row>0){
-                    session_start();
-                    $_SESSION['userid']=$userid;
-                    header("Location:home.php");
-                    exit();
-                 
+                        $data=$sql->fetchAll(PDO::FETCH_ASSOC);
+                        foreach( $data as $list){
+                                echo json_encode($list);
+                        }
                 }else{
-                    $msg="Invaild Login Details";
+                   echo json_encode('not working');
                 }
             }catch(PDOException $e){
                 echo $e->getMessage();
             }   
 
-}else{}
+}elseif(isset($_POST['onlinestatus'])){
+    $con= new PDO("mysql:host=localhost;dbname=messenger",'root','');
+     $checkstatus=$con->prepare("SELECT * FROM user_login WHERE status=1");
+     $checkstatus->execute();
+$result= $checkstatus->fetchAll(PDO::FETCH_ASSOC);
+       
+        echo json_encode($result);
+
+}
 ?>
